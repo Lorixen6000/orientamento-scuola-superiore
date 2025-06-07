@@ -6,6 +6,10 @@ OrientaFacile è un quiz interattivo per aiutare gli studenti a scegliere la scu
 
 Basta aprire il file HTML nel browser o visitare il sito online (se pubblicato su GitHub Pages).
 
+## Link
+
+Il link di OrientaFacile è https://lorixen6000.github.io/orientamento-scuola-superiore/
+
 ---
 
 **Autore:** Lorenzo  
