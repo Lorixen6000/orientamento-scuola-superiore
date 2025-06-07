@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OrientaFacile - Quiz per scegliere la scuola superiore</title>
+
+<!-- Metadati SEO -->
+<meta name="description" content="OrientaFacile - Il quiz semplice per aiutarti a scegliere la scuola superiore giusta." />
+<meta name="keywords" content="orientamento, scuola superiore, quiz, liceo, istituto tecnico, professionale, orientafacile" />
+<meta name="author" content="Tuo Nome o Team OrientaFacile" />
+
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #ffffff; /* bianco */
+    margin: 0; padding: 0;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+  }
+  .container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 600px;
+    padding: 20px 30px;
+  }
+  h1 {
+    text-align: center;
+    color: #32cd32; /* verde lime */
+  }
+  .question {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    color: #00bfff; /* celeste */
+  }
+  .answers {
+    list-style: none;
+    padding: 0;
+  }
+  .answers li {
+    margin: 8px 0;
+  }
+  button.answer-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1em;
+    border: 2px solid #32cd32; /* verde lime */
+    border-radius: 6px;
+    background: #fff;
+    color: #32cd32;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  button.answer-btn:hover {
+    background: #32cd32;
+    color: white;
+  }
+  button.answer-btn.selected {
+    background: #00bfff; /* celeste */
+    color: white;
+    border-color: #00bfff;
+  }
+  .next-btn {
+    margin-top: 20px;
+    padding: 12px 20px;
+    font-size: 1em;
+    background: #32cd32; /* verde lime */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: none;
+  }
+  .result {
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #32cd32; /* verde lime */
+    margin-top: 30px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>OrientaFacile</h1>
+  <div id="quiz-box">
+    <div class="question" id="question-text"></div>
+    <ul class="answers" id="answers-list"></ul>
+    <button id="next-btn" class="next-btn">Prossima domanda</button>
+    <div id="result" class="result"></div>
+  </div>
+</div>
+
+<script>
+  const quizData = [
+    {
+      question: "1. Quale materia ti piace di più?",
+      answers: [
+        { text: "Matematica o Fisica", category: "Scientifico" },
+        { text: "Italiano o Latino", category: "Classico" },
+        { text: "Informatica o Elettronica", category: "Tecnico" },
+        { text: "Disegno o Pittura", category: "Artistico" },
+        { text: "Lavori pratici o manuali", category: "Professionale" },
+        { text: "Scienze motorie sportive (SMS)", category: "Sportivo" },
+        { text: "Scienze naturali, agricoltura", category: "Agrario" },
+        { text: "Cucina o ospitalità", category: "Alberghiero" },
+        { text: "Economia o diritto", category: "Economico" },
+        { text: "Psicologia o relazioni umane", category: "ScienzeUmane" },
+        { text: "Musica e suonare strumenti", category: "Musicale" },
+      ]
+    },
+    {
+      question: "2. Come ti vedi in futuro?",
+      answers: [
+        { text: "Uno scienziato o ingegnere", category: "Scientifico" },
+        { text: "Un professore o scrittore", category: "Classico" },
+        { text: "Un tecnico informatico", category: "Tecnico" },
+        { text: "Un artista o designer", category: "Artistico" },
+        { text: "Un professionista (cuoco, meccanico, ecc.)", category: "Professionale" },
+        { text: "Un insegnante di motoria o un personal trainer", category: "Sportivo" },
+        { text: "Un agronomo o esperto ambientale", category: "Agrario" },
+        { text: "Un cuoco o manager alberghiero", category: "Alberghiero" },
+        { text: "Un economista o sociologo", category: "Economico" },
+        { text: "Un assistente sociale o educatore", category: "ScienzeUmane" },
+        { text: "Un cantante o un musicista", category: "Musicale" },
+      ]
+    },
+    {
+      question: "3. Cosa preferisci fare nel tempo libero?",
+      answers: [
+        { text: "Risolvere problemi logici o enigmi", category: "Scientifico" },
+        { text: "Leggere o scrivere", category: "Classico" },
+        { text: "Smontare oggetti e capire come funzionano", category: "Tecnico" },
+        { text: "Disegnare, dipingere o suonare", category: "Artistico" },
+        { text: "Fare lavori pratici o bricolage", category: "Professionale" },
+        { text: "Fare allenamento e sport con gli amici", category: "Sportivo" },
+        { text: "Coltivare piante o stare nella natura", category: "Agrario" },
+        { text: "Cucinare per la famiglia o gli amici", category: "Alberghiero" },
+        { text: "Leggere notizie economiche e sociali", category: "Economico" },
+        { text: "Ascoltare gli altri o aiutare le persone", category: "ScienzeUmane" },
+        { text: "Suonare uno strumento o cantare", category: "Musicale" },
+      ]
+    },
+    // Aggiungi qui le altre 7 domande simili (totale 10 domande)
+    {
+      question: "4. Ti piace lavorare in gruppo o da solo?",
+      answers: [
+        { text: "Da solo", category: "Scientifico" },
+        { text: "In gruppo", category: "ScienzeUmane" },
+        { text: "Entrambi", category: "Tecnico" },
+        { text: "In gruppo creativo", category: "Artistico" },
+        { text: "Lavori manuali da solo", category: "Professionale" },
+        { text: "Sport di squadra", category: "Sportivo" },
+        { text: "Lavoro in fattoria", category: "Agrario" },
+        { text: "Team cucina o sala", category: "Alberghiero" },
+        { text: "Lavoro di squadra in economia", category: "Economico" },
+        { text: "Aiuto sociale in gruppo", category: "ScienzeUmane" },
+        { text: "Suonare in band", category: "Musicale" },
+      ]
+    },
+    {
+      question: "5. Quale ambiente preferisci?",
+      answers: [
+        { text: "Laboratorio scientifico", category: "Scientifico" },
+        { text: "Biblioteca", category: "Classico" },
+        { text: "Officina o laboratorio tecnico", category: "Tecnico" },
+        { text: "Atelier artistico", category: "Artistico" },
+        { text: "Officina meccanica", category: "Professionale" },
+        { text: "Palestra o campo sportivo", category: "Sportivo" },
+        { text: "Azienda agricola", category: "Agrario" },
+        { text: "Cucina professionale o hotel", category: "Alberghiero" },
+        { text: "Ufficio economico", category: "Economico" },
+        { text: "Centro sociale o comunità", category: "ScienzeUmane" },
+        { text: "Sala musica", category: "Musicale" },
+      ]
+    },
+    {
+      question: "6. Che tipo di libri o film preferisci?",
+      answers: [
+        { text: "Divulgazione scientifica", category: "Scientifico" },
+        { text: "Classici della letteratura", category: "Classico" },
+        { text: "Manuali tecnici", category: "Tecnico" },
+        { text: "Arte e creatività", category: "Artistico" },
+        { text: "Storie di mestieri", category: "Professionale" },
+        { text: "Documentari sportivi", category: "Sportivo" },
+        { text: "Natura e ambiente", category: "Agrario" },
+        { text: "Cucina e ospitalità", category: "Alberghiero" },
+        { text: "Economia e finanza", category: "Economico" },
+        { text: "Psicologia e società", category: "ScienzeUmane" },
+        { text: "Musica e concerti", category: "Musicale" },
+      ]
+    },
+    {
+      question: "7. Qual è il tuo obiettivo principale?",
+      answers: [
+        { text: "Ricerca scientifica", category: "Scientifico" },
+        { text: "Studio della cultura e storia", category: "Classico" },
+        { text: "Sviluppo tecnologico", category: "Tecnico" },
+        { text: "Espressione artistica", category: "Artistico" },
+        { text: "Apprendere un mestiere", category: "Professionale" },
+        { text: "Migliorare la forma fisica", category: "Sportivo" },
+        { text: "Tutela dell'ambiente", category: "Agrario" },
+        { text: "Gestione ospitalità", category: "Alberghiero" },
+        { text: "Carriera in ambito economico", category: "Economico" },
+        { text: "Aiutare le persone", category: "ScienzeUmane" },
+        { text: "Diventare musicista professionista", category: "Musicale" },
+      ]
+    },
+    {
+      question: "8. Che tipo di attività ti piace di più?",
+      answers: [
+        { text: "Esperimenti e laboratori", category: "Scientifico" },
+        { text: "Leggere e scrivere", category: "Classico" },
+        { text: "Riparare e costruire", category: "Tecnico" },
+        { text: "Creare opere artistiche", category: "Artistico" },
+        { text: "Lavori manuali pratici", category: "Professionale" },
+        { text: "Sport e attività fisica", category: "Sportivo" },
+        { text: "Lavorare all'aperto", category: "Agrario" },
+        { text: "Cucinare e servire", category: "Alberghiero" },
+        { text: "Analizzare dati economici", category: "Economico" },
+        { text: "Relazionarsi e ascoltare", category: "ScienzeUmane" },
+        { text: "Suonare strumenti musicali", category: "Musicale" },
+      ]
+    },
+    {
+      question: "9. Come preferisci comunicare?",
+      answers: [
+        { text: "Con dati e numeri", category: "Scientifico" },
+        { text: "Con la parola scritta e parlata", category: "Classico" },
+        { text: "Con strumenti tecnici", category: "Tecnico" },
+        { text: "Con immagini e colori", category: "Artistico" },
+        { text: "Con azioni pratiche", category: "Professionale" },
+        { text: "Con lo sport e il movimento", category: "Sportivo" },
+        { text: "Con la natura", category: "Agrario" },
+        { text: "Con ospitalità e servizi", category: "Alberghiero" },
+        { text: "Con numeri e grafici", category: "Economico" },
+        { text: "Con empatia e ascolto", category: "ScienzeUmane" },
+        { text: "Con musica e suoni", category: "Musicale" },
+      ]
+    },
+    {
+      question: "10. Quale attività ti fa sentire meglio?",
+      answers: [
+        { text: "Studiare scienza e tecnologia", category: "Scientifico" },
+        { text: "Leggere opere letterarie", category: "Classico" },
+        { text: "Progettare e realizzare", category: "Tecnico" },
+        { text: "Creare arte visiva o sonora", category: "Artistico" },
+        { text: "Fare lavori manuali", category: "Professionale" },
+        { text: "Fare sport e allenamento", category: "Sportivo" },
+        { text: "Lavorare con la natura", category: "Agrario" },
+        { text: "Cucinare o lavorare in hotel", category: "Alberghiero" },
+        { text: "Studiare economia e diritto", category: "Economico" },
+        { text: "Aiutare e ascoltare gli altri", category: "ScienzeUmane" },
+        { text: "Suonare e cantare", category: "Musicale" },
+      ]
+    }
+  ];
+
+  const scores = {
+    Scientifico: 0,
+    Classico: 0,
+    Tecnico: 0,
+    Artistico: 0,
+    Professionale: 0,
+    Sportivo: 0,
+    Agrario: 0,
+    Alberghiero: 0,
+    Economico: 0,
+    ScienzeUmane: 0,
+    Musicale: 0,
+  };
+
+  let currentQuestion = 0;
+
+  const questionText = document.getElementById('question-text');
+  const answersList = document.getElementById('answers-list');
+  const nextBtn = document.getElementById('next-btn');
+  const resultDiv = document.getElementById('result');
+
+  function showQuestion() {
+    resultDiv.textContent = "";
+    nextBtn.style.display = "none";
+    answersList.innerHTML = "";
+
+    const q = quizData[currentQuestion];
+    questionText.textContent = q.question;
+
+    q.answers.forEach((answer, index) => {
+      const li = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.classList.add('answer-btn');
+      btn.textContent = answer.text;
+      btn.onclick = () => selectAnswer(answer.category, btn);
+      li.appendChild(btn);
+      answersList.appendChild(li);
+    });
+  }
+
+  function selectAnswer(category, btnClicked) {
+    scores[category]++;
+    // Disabilita tutti i bottoni e rimuovi evidenziazione
+    const buttons = document.querySelectorAll('.answer-btn');
+    buttons.forEach(btn => {
+      btn.disabled = true;
+      btn.classList.remove('selected');
+    });
+    // Evidenzia il bottone selezionato
+    btnClicked.classList.add('selected');
+
+    nextBtn.style.display = "block";
+  }
+
+  function showResult() {
+    questionText.textContent = "Risultato del quiz:";
+    answersList.innerHTML = "";
+
+    let maxScore = -1;
+    let bestCategory = "";
+    for (const cat in scores) {
+      if (scores[cat] > maxScore) {
+        maxScore = scores[cat];
+        bestCategory = cat;
+      }
+    }
+
+    const categoryNames = {
+      Scientifico: "Liceo Scientifico",
+      Classico: "Liceo Classico",
+      Tecnico: "Istituto Tecnico",
+      Artistico: "Liceo Artistico",
+      Professionale: "Istituto Professionale",
+      Sportivo: "Liceo Sportivo",
+      Agrario: "Liceo Agrario",
+      Alberghiero: "Liceo Alberghiero",
+      Economico: "Liceo Economico-Sociale",
+      ScienzeUmane: "Liceo delle Scienze Umane",
+      Musicale: "Liceo Musicale"
+    };
+
+    resultDiv.textContent = `Ti consigliamo il: ${categoryNames[bestCategory]}!`;
+    nextBtn.style.display = "none";
+  }
+
+  nextBtn.addEventListener('click', () => {
+    currentQuestion++;
+    if (currentQuestion < quizData.length) {
+      showQuestion();
+    } else {
+      showResult();
+    }
+  });
+
+  showQuestion();
+</script>
+</body>
+</html>
